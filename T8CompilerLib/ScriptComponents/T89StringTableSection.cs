@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using T89CompilerLib.OpCodes;
 
 namespace T89CompilerLib.ScriptComponents
@@ -85,7 +86,7 @@ namespace T89CompilerLib.ScriptComponents
             uint count = 0;
             foreach(string s in TableEntries.Keys)
             {
-                count += (uint)s.Length + 1 + (uint)(8 * (TableEntries[s].References.Count / 255 + 1)) + 2; //null terminated + header + prefix
+                count += (uint)Encoding.UTF8.GetByteCount(s) + 1 + (uint)(8 * (TableEntries[s].References.Count / 255 + 1)) + 2; //null terminated + header + prefix
                 count += (uint)TableEntries[s].References.Count * 4; //uint * count
             }
 

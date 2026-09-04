@@ -33,37 +33,32 @@ namespace T89CompilerLib
         }
 
         /// <summary>
-        /// Reads a string terminated by a null byte and returns the reader to the original position
+        /// Reads a UTF-8 string terminated by a null byte and returns the reader to the original position
         /// </summary>
         /// <returns>Read String</returns>
         public static string PeekNullTerminatedString(this BinaryReader br, long offset, int maxSize = -1)
         {
-            // Create String Builder
-            StringBuilder str = new StringBuilder();
-            // Seek to position
             var temp = br.BaseStream.Position;
             br.BaseStream.Position = offset;
-            // Current Byte Read
+
+            MemoryStream buffer = new MemoryStream();
             int byteRead;
-            // Size of String
             int size = 0;
-            // Loop Until we hit terminating null character
             while ((byteRead = br.BaseStream.ReadByte()) != 0x0 && size++ != maxSize)
-                str.Append(Convert.ToChar(byteRead));
-            // Go back
+                buffer.WriteByte((byte)byteRead);
+
             br.BaseStream.Position = temp;
-            // Ship back Result
-            return str.ToString();
+            return Encoding.UTF8.GetString(buffer.ToArray());
         }
 
         /// <summary>
-        /// Writes a null terminated string
+        /// Writes a null terminated UTF-8 string
         /// </summary>
         /// <param name="br"></param>
         /// <param name="str"></param>
         public static void WriteNullTerminatedString(this BinaryWriter br, string str)
         {
-            foreach (byte c in Encoding.ASCII.GetBytes(str))
+            foreach (byte c in Encoding.UTF8.GetBytes(str))
                 br.Write(c);
             br.Write((byte)0);
         }
